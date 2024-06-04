@@ -1,0 +1,79 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Using Maven to build the project'
+            }
+        }
+
+        stage('Unit and Integration Tests') {
+            steps {
+                echo 'Using JUnit for unit and integration tests'
+            }
+            post {
+                always {
+                    script {
+                        if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
+                            echo "Tests Passed"
+                        } else {
+                            echo "Tests Failed"
+                        }
+                    }
+                    emailext attachLog: true,
+                        subject: "Jenkins build stage '${env.STAGE_NAME}' result: ${currentBuild.result}",
+                        to: 'neellodhiya05@gmail.com',
+                        body: """<p>Stage '${env.STAGE_NAME}' has completed.
+                                  Result is: ${currentBuild.result}.</p>"""
+                }
+            }
+        }
+
+        stage('Code Analysis') {
+            steps {
+                echo 'Using SonarQube for static code analysis'
+            }
+        }
+
+        stage('Security Scan') {
+            steps {
+                echo 'Using OWASP Dependency-Check for vulnerability scanning'
+            }
+            post {
+                always {
+                    script {
+                        if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
+                            echo "Security Scan Passed"
+                        } else {
+                            echo "Security Scan Failed"
+                        }
+                    }
+                    emailext attachLog: true,
+                        subject: "Jenkins build stage '${env.STAGE_NAME}' result: ${currentBuild.result}",
+                        to: 'neellodhiya05@gmail.com',
+                        body: """<p>Stage '${env.STAGE_NAME}' has completed.
+                                  Result is: ${currentBuild.result}.</p>"""
+                }
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                echo 'Using AWS CLI to deploy to an AWS EC2 staging server'
+            }
+        }
+
+        stage('Integration Tests on Staging') {
+            steps {
+                echo 'Running additional tests against the staging server'
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                echo 'Using AWS CLI to deploy to an AWS EC2 production server'
+            }
+        }
+    }
+}
