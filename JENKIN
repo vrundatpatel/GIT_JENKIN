@@ -23,7 +23,7 @@ pipeline {
                     }
                     emailext attachLog: true,
                         subject: "Jenkins build stage '${env.STAGE_NAME}' result: ${currentBuild.result}",
-                        to: 'neellodhiya05@gmail.com',
+                        to: 'vrundatpatel21@gmail.com',
                         body: """<p>Stage '${env.STAGE_NAME}' has completed.
                                   Result is: ${currentBuild.result}.</p>"""
                 }
